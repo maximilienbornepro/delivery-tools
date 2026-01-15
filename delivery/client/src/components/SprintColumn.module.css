@@ -1,0 +1,32 @@
+.sprintColumn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  border-right: 1px dashed #d1d5db;
+}
+
+.sprintColumn:last-child {
+  border-right: none;
+}
+
+.dates {
+  display: flex;
+  flex-direction: column;
+  margin-right: 8px;
+  padding: 4px 8px;
+  background: #fff;
+  border-radius: 4px;
+  font-size: 9px;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+.name {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  color: #000;
+  padding: 6px 24px;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 14px;
+}

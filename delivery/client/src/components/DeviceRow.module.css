@@ -1,0 +1,39 @@
+.deviceRow {
+  display: flex;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.deviceRow:last-child {
+  border-bottom: none;
+}
+
+.deviceLabel {
+  width: 100px;
+  min-width: 100px;
+  padding: 12px;
+  font-weight: 600;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f3f4f6;
+  color: #374151;
+  border-right: 1px solid #e5e7eb;
+}
+
+.timeline {
+  flex: 1;
+  position: relative;
+  min-height: 200px;
+  padding: 10px;
+  background: #fefce8;
+}
+
+.sprintDivider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: #d1d5db;
+  border-left: 1px dashed #d1d5db;
+}

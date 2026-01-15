@@ -1,0 +1,216 @@
+.board {
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.piHeader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 16px;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.piName {
+  color: #1f2937;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.sprintHeader {
+  display: flex;
+  border-bottom: 2px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.platformLabel {
+  width: 100px;
+  min-width: 100px;
+  padding: 12px;
+  font-weight: 700;
+  font-size: 11px;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f3f4f6;
+  border-right: 1px solid #e5e7eb;
+}
+
+.sprintCol {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  border-right: 1px dashed #d1d5db;
+}
+
+.sprintCol:last-child {
+  border-right: none;
+}
+
+.sprintInfo {
+  display: flex;
+  flex-direction: column;
+  margin-right: 8px;
+  padding: 4px 8px;
+  background: #fff;
+  border-radius: 4px;
+  font-size: 9px;
+  color: #6b7280;
+}
+
+.sprintDates {
+  line-height: 1.4;
+}
+
+.sprintName {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  color: #000;
+  padding: 6px 24px;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.boardContent {
+  position: relative;
+}
+
+.mepLayer {
+  position: absolute;
+  top: 0;
+  left: 100px; /* Same as platformLabel width */
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 15;
+}
+
+.platformRow {
+  display: flex;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.platformRow:last-child {
+  border-bottom: none;
+}
+
+.timeline {
+  flex: 1;
+  position: relative;
+  min-height: 180px;
+  padding: 10px;
+}
+
+.sprintDivider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: #d1d5db;
+  border-left: 1px dashed #d1d5db;
+}
+
+.task {
+  position: absolute;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #1f2937;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  z-index: 1;
+}
+
+.task:hover {
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.retourGoogle {
+  border-left: 3px solid #ef4444;
+}
+
+.retourLabel {
+  position: absolute;
+  top: -16px;
+  left: 0;
+  font-size: 8px;
+  color: #ef4444;
+  font-weight: 700;
+  background: #fef2f2;
+  padding: 2px 4px;
+  border-radius: 2px;
+}
+
+.playerBadge {
+  background: #dc2626;
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 8px;
+  font-weight: 700;
+}
+
+.apiBadge {
+  background: #f97316;
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 8px;
+  font-weight: 700;
+}
+
+.taskTitle {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.checkmark {
+  color: #059669;
+  font-weight: bold;
+}
+
+.mepMarker {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 5;
+}
+
+.mepLine {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #6b7280;
+  border-left: 2px dashed #6b7280;
+}
+
+.mepInfo {
+  position: absolute;
+  top: 5px;
+  left: 8px;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 9px;
+  color: #374151;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  white-space: nowrap;
+}

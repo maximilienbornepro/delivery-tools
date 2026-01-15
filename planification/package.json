@@ -1,0 +1,9 @@
+{
+  "name": "planification",
+  "version": "1.0.0",
+  "description": "Planification Dotscreen Application",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

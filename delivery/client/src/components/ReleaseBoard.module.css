@@ -1,0 +1,134 @@
+.container {
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  height: 100%;
+}
+
+.header {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  color: #fff;
+  padding: 12px 20px;
+  font-weight: 700;
+  font-size: 12px;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+.content {
+  padding: 0;
+}
+
+.tableHeader {
+  display: flex;
+  background: #f9fafb;
+  border-bottom: 2px solid #e5e7eb;
+  padding: 10px 16px;
+}
+
+.colVersion {
+  flex: 0 0 180px;
+  font-weight: 600;
+  font-size: 12px;
+  color: #059669;
+  text-align: center;
+}
+
+.colDetail {
+  flex: 1;
+  font-weight: 600;
+  font-size: 12px;
+  color: #059669;
+  text-align: center;
+}
+
+.releaseList {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.releaseRow {
+  display: flex;
+  align-items: flex-start;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.releaseRow:last-child {
+  border-bottom: none;
+}
+
+.releaseRow:hover {
+  background: #f9fafb;
+}
+
+.releaseIcon {
+  flex: 0 0 50px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.rocketIcon {
+  font-size: 28px;
+}
+
+.releaseInfo {
+  flex: 0 0 130px;
+  padding-right: 16px;
+}
+
+.releaseDate,
+.releaseVersion {
+  font-size: 11px;
+  color: #374151;
+  margin-bottom: 2px;
+}
+
+.releaseDate strong,
+.releaseVersion strong {
+  color: #1f2937;
+}
+
+.releaseDetails {
+  flex: 1;
+}
+
+.detailList {
+  margin: 0;
+  padding-left: 16px;
+  font-size: 11px;
+  color: #374151;
+  line-height: 1.6;
+}
+
+.detailList li {
+  margin-bottom: 2px;
+}
+
+.detailList li:last-child {
+  margin-bottom: 0;
+}
+
+.issueLink {
+  color: #667eea;
+  font-weight: 600;
+  text-decoration: none;
+  margin-right: 8px;
+  font-size: 10px;
+}
+
+.issueLink:hover {
+  text-decoration: underline;
+  color: #5a67d8;
+}
+
+.issueSummary {
+  color: #374151;
+}
+
+.noDetails {
+  color: #9ca3af;
+  font-size: 11px;
+}

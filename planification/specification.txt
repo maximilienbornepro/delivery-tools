@@ -1,0 +1,267 @@
+# Prompt de specification : Application de Planification d'equipe
+
+Developpe une application web frontend pure (HTML/CSS/JS vanilla, sans framework) pour gerer la planification de charge d'une equipe de developpement.
+
+## Architecture technique
+
+- **Stack** : HTML5, CSS3, JavaScript ES6+ (vanilla)
+- **Persistance** : localStorage uniquement (cle : `planification-dotscreen-v2`)
+- **Serveur** : Serveur Node.js statique minimal sur le port 3200
+
+## Structure des fichiers
+
+```
+/index.html
+/app.js
+/styles.css
+/server.js
+/package.json
+```
+
+## Layout general
+
+Interface avec **sidebar fixe a gauche** (280px) + **zone principale a droite** :
+
+### Sidebar
+- Header : titre "Planifications" + bouton "+ Nouvelle"
+- Liste des planifications (cliquables pour charger)
+- Chaque item affiche : nom, nombre de taches, total jours (min-max)
+- Footer : boutons "Exporter" et "Importer" (fichiers JSON)
+
+### Zone principale
+- **Header** : Titre de la planification active + boutons (Sauvegarder, Renommer, Supprimer)
+- **Section Configuration** (pliable, pliee par defaut)
+- **Section Recapitulatif**
+- **Section Taches**
+
+## Modele de donnees
+
+### T-Shirt Sizes (constantes)
+```javascript
+{
+    'N/A': { min: 0, max: 0 },
+    'XXS': { min: 2, max: 5 },
+    'XS': { min: 5, max: 10 },
+    'S': { min: 10, max: 20 },
+    'M': { min: 20, max: 30 },
+    'L': { min: 30, max: 50 },
+    'XL': { min: 50, max: 100 },
+    'XXL': { min: 100, max: 200 }
+}
+```
+
+### Configuration (par planification)
+```javascript
+{
+    planningDuration: 2,        // Duree en mois (1 ou 2)
+    devResources: 2.5,          // Nombre de devs (decimal)
+    workDaysPerMonth: 20,       // Jours ouvres par mois
+    leadRate: 15,               // % des jours dev pour le lead
+    archiRate: 7.5,             // % des jours dev pour l'archi
+    reunionDays: 12.5,          // Jours de reunion (fixe)
+    gestionProjetDays: 20,      // Jours gestion projet (fixe)
+    qaDays: 20                  // Jours QA (fixe)
+}
+```
+
+### Tache
+```javascript
+{
+    id: string,          // Genere : Date.now().toString(36) + random
+    app: string,         // Nom de l'application
+    name: string,        // Nom de la tache
+    size: string,        // T-shirt size (N/A, XXS, XS, S, M, L, XL, XXL)
+    createdAt: ISO8601,
+    updatedAt: ISO8601   // Optionnel
+}
+```
+
+### Planification
+```javascript
+{
+    id: string,
+    name: string,
+    config: { ... },     // Sans tshirtSizes
+    tasks: [ ... ],
+    createdAt: ISO8601,
+    updatedAt: ISO8601
+}
+```
+
+## Calculs
+
+```
+Jours dev disponibles = planningDuration x devResources x workDaysPerMonth
+Jours Lead = Jours dev disponibles x (leadRate / 100)
+Jours Archi = Jours dev disponibles x (archiRate / 100)
+Autre = reunionDays + gestionProjetDays + qaDays
+Total Jours Homme = Jours dev + Lead + Archi + Autre
+
+Jours planifies (min) = Somme taches.size.min
+Jours planifies (max) = Somme taches.size.max
+Capacite % = (jours planifies / jours dev disponibles) x 100
+```
+
+## Section Configuration
+
+3 cartes en grille responsive :
+
+1. **Duree de planification** : Select (1 mois / 2 mois)
+2. **Ressources** :
+   - Input "Ressources de developpement disponibles" (number, step 0.5)
+   - Input "Jours de travail / mois" (number)
+3. **Taux (% des jours dev)** :
+   - Input "Taux Lead (%)" (number, step 0.5, max 100)
+   - Input "Taux Archi (%)" (number, step 0.5, max 100)
+   - Input "Jours de reunion" (number, step 0.5)
+   - Input "Jours gestion de projet" (number, step 0.5)
+   - Input "Jours QA" (number, step 0.5)
+
+La section est **pliable** avec une icone > qui tourne a 90 degres quand depliee. **Pliee par defaut**.
+
+## Section Recapitulatif
+
+Grille de 5 cartes :
+- Jours dev disponibles
+- Jours Lead
+- Jours Archi
+- Total Jours Homme
+- Autre (avec detail : Reunion | GP | QA)
+
+**Jauge de capacite** visuelle :
+- Affiche "X - Y jours estimes / Z jours disponibles"
+- Barre de progression coloree :
+  - Bleu (normal) : < 80%
+  - Orange (warning) : 80-100%
+  - Rouge (danger) : > 100%
+- Label : "X% - Y% utilise"
+
+## Section Taches
+
+### Header
+- Titre "Taches"
+- Actions :
+  - Select filtre par application
+  - Bouton "Importer taches" (depuis autre planification)
+  - Bouton "Importer CSV"
+  - Bouton "Tout supprimer" (danger)
+  - Bouton "+ Ajouter une tache" (primary)
+
+### Tableau des taches
+
+Colonnes : Application | Tache | T-Shirt Size | Actions
+
+**Edition inline** directement dans le tableau :
+- Application : input text avec datalist des apps existantes
+- Tache : input text
+- T-Shirt Size : select colore selon la taille (vert -> rouge)
+- Actions : bouton "Supprimer"
+
+Tri par application puis par nom de tache.
+
+### Resume par application
+
+Grille de cartes, une par application :
+- Nom de l'app
+- Nombre de taches
+- Jours planifies (min - max)
+
+## Modales
+
+### Modal Ajout/Edition de tache
+- Champs : Application (avec datalist), Nom, T-Shirt Size (select)
+- Boutons : Annuler, Enregistrer
+
+### Modal Confirmation suppression
+- Message de confirmation
+- Boutons : Annuler, Supprimer
+
+### Modal Nom de planification
+- Utilisee pour "Nouvelle" et "Renommer"
+- Input texte pour le nom
+- Boutons : Annuler, Enregistrer
+
+### Modal Import de taches
+- Select pour choisir la planification source
+- Preview des taches groupees par app
+- Boutons : Annuler, Importer
+- Copie les taches avec nouveaux IDs
+
+## Fonctionnalites d'import/export
+
+### Export JSON
+- Telecharge un fichier `planification-dotscreen-YYYY-MM-DD.json`
+- Contient toutes les planifications
+
+### Import JSON
+- Fusionne les planifications importees avec les existantes
+- Support du format legacy (une seule planification)
+
+### Import CSV
+- Parsing intelligent : detecte les apps (SMART TV, ORANGE, FREE, SFR, BOUYGUES, CANAL)
+- Delimiteurs supportes : `;` et `,`
+- Encoding : ISO-8859-1
+- Extrait : app, nom de tache, t-shirt size
+
+## Styles CSS
+
+### Variables CSS
+```css
+:root {
+    --primary-color: #2563eb;
+    --primary-hover: #1d4ed8;
+    --secondary-color: #64748b;
+    --success-color: #22c55e;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --background: #f8fafc;
+    --card-bg: #ffffff;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --border-color: #e2e8f0;
+}
+```
+
+### Couleurs T-Shirt sizes
+- XXS/XS : vert (#f0fdf4, #dcfce7)
+- S : bleu (#dbeafe)
+- M : jaune (#fef3c7)
+- L : orange (#fed7aa)
+- XL/XXL : rouge (#fecaca, #fca5a5)
+
+### Responsive
+- Tablet (< 1024px) : sidebar reduite a 220px
+- Mobile (< 768px) : sidebar horizontale en haut, liste en flex wrap
+- Small mobile (< 480px) : grilles en 1 colonne
+
+## Comportements
+
+1. **Auto-save** : Sauvegarde localStorage a chaque modification
+2. **Raccourci clavier** : Escape ferme toutes les modales
+3. **Fermeture modale** : Clic sur l'overlay ferme la modale
+4. **Planification par defaut** : Si aucune donnee, cree "Planification Jan-Fev 2025" avec des taches d'exemple
+5. **Suppression planification** : Si c'est la derniere, en cree une nouvelle automatiquement
+
+## Taches par defaut (premiere utilisation)
+
+```javascript
+[
+    { app: 'Smart TV', name: 'Menu lateral par API', size: 'XS' },
+    { app: 'Smart TV', name: 'Piano hit de click', size: 'XS' },
+    { app: 'Smart TV', name: 'Gestion du back depuis les pages profondes', size: 'XS' },
+    { app: 'Smart TV', name: 'Adaptation Collection', size: 'XXS' },
+    { app: 'Smart TV', name: 'Run / Bug Fix', size: 'S' },
+    { app: 'Free', name: 'Recommandation', size: 'M' },
+    { app: 'Free', name: 'Menu lateral par API', size: 'S' },
+    { app: 'Free', name: 'Gestion des erreurs player', size: 'S' },
+    { app: 'Free', name: 'Nielsen Tanuki', size: 'XXS' },
+    { app: 'Free', name: 'Adaptation Collection', size: 'XXS' },
+    { app: 'Free', name: 'Run / Bug Fix', size: 'S' },
+    { app: 'Free', name: 'Evolution publicite', size: 'S' },
+    { app: 'Free', name: 'Estat', size: 'S' },
+    { app: 'Orange', name: 'Recommandation', size: 'S' },
+    { app: 'Orange', name: 'Evolution publicite STB3', size: 'S' },
+    { app: 'Orange', name: 'Merge Smart TV', size: 'XXS' },
+    { app: 'Orange', name: 'Run', size: 'S' }
+]
+```

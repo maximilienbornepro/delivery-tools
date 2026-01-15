@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <title>Delivery Process - France TV</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #0a0a0a;
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        /* Navigation */
+        .nav {
+            display: flex;
+            align-items: center;
+            background: #1a1a1a;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0 20px;
+            height: 50px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .nav-brand {
+            font-size: 16px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-right: 30px;
+            cursor: pointer;
+        }
+
+        .nav-items {
+            display: flex;
+            gap: 4px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            color: #a0aec0;
+            border: 1px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+        }
+
+        .nav-item.active {
+            background: rgba(102, 126, 234, 0.15);
+            color: #667eea;
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+
+        .nav-item-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .nav-item[data-app="pointing-poker"] .nav-item-dot {
+            background: #667eea;
+        }
+
+        .nav-item[data-app="delivery"] .nav-item-dot {
+            background: #059669;
+        }
+
+        .nav-item[data-app="planification"] .nav-item-dot {
+            background: #f59e0b;
+        }
+
+        .nav-status {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .nav-status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #059669;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Main content */
+        .main {
+            padding-top: 50px;
+            height: 100vh;
+        }
+
+        /* Landing page */
+        .landing {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 50px);
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+        }
+
+        .landing-title {
+            font-size: 48px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+        }
+
+        .landing-subtitle {
+            font-size: 18px;
+            color: #a0aec0;
+            max-width: 600px;
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .app-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .app-card:hover {
+            transform: translateY(-4px);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .app-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .app-card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .app-card-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .app-card[data-app="pointing-poker"] .app-card-icon {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .app-card[data-app="delivery"] .app-card-icon {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+        }
+
+        .app-card[data-app="planification"] .app-card-icon {
+            background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+        }
+
+        .app-card-name {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .app-card-description {
+            font-size: 14px;
+            color: #a0aec0;
+            line-height: 1.5;
+        }
+
+        /* App frame */
+        .app-frame {
+            display: none;
+            width: 100%;
+            height: calc(100vh - 50px);
+        }
+
+        .app-frame.active {
+            display: block;
+        }
+
+        .app-frame iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-brand" onclick="showLanding()">Delivery Process</div>
+        <div class="nav-items" id="nav-items"></div>
+        <div class="nav-status" id="nav-status">
+            <span class="nav-status-dot"></span>
+            <span>Connecte</span>
+        </div>
+    </nav>
+
+    <main class="main">
+        <div class="landing" id="landing">
+            <h1 class="landing-title">Delivery Process</h1>
+            <p class="landing-subtitle">
+                Suite d'outils de gestion de projet pour la planification, l'estimation et le suivi des livraisons
+            </p>
+            <div class="apps-grid" id="apps-grid"></div>
+        </div>
+
+        <div class="app-frame" id="app-frame-pointing-poker">
+            <iframe id="iframe-pointing-poker" src=""></iframe>
+        </div>
+
+        <div class="app-frame" id="app-frame-delivery">
+            <iframe id="iframe-delivery" src=""></iframe>
+        </div>
+
+        <div class="app-frame" id="app-frame-planification">
+            <iframe id="iframe-planification" src=""></iframe>
+        </div>
+    </main>
+
+    <script>
+        let apps = [];
+        let currentApp = null;
+
+        const icons = {
+            cards: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>`,
+            board: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
+            </svg>`,
+            calendar: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>`
+        };
+
+        // Load apps from API
+        async function loadApps() {
+            try {
+                const response = await fetch('/api/apps');
+                const data = await response.json();
+                apps = data.apps;
+                renderNavItems();
+                renderAppCards();
+                handleInitialRoute();
+            } catch (error) {
+                console.error('Error loading apps:', error);
+            }
+        }
+
+        function renderNavItems() {
+            const container = document.getElementById('nav-items');
+            container.innerHTML = apps.map(app => `
+                <div class="nav-item" data-app="${app.id}" onclick="openApp('${app.id}')">
+                    <span class="nav-item-dot"></span>
+                    <span>${app.name}</span>
+                </div>
+            `).join('');
+        }
+
+        function renderAppCards() {
+            const container = document.getElementById('apps-grid');
+            container.innerHTML = apps.map(app => `
+                <div class="app-card" data-app="${app.id}" onclick="openApp('${app.id}')">
+                    <div class="app-card-header">
+                        <div class="app-card-icon">${icons[app.icon] || ''}</div>
+                        <div class="app-card-name">${app.name}</div>
+                    </div>
+                    <p class="app-card-description">${app.description}</p>
+                </div>
+            `).join('');
+        }
+
+        function showLanding(updateHistory = true) {
+            currentApp = null;
+
+            // Hide all app frames
+            document.querySelectorAll('.app-frame').forEach(frame => {
+                frame.classList.remove('active');
+            });
+
+            // Show landing
+            document.getElementById('landing').style.display = 'flex';
+
+            // Update nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // Update title
+            document.title = 'Delivery Process - France TV';
+
+            // Update URL
+            if (updateHistory) {
+                history.pushState({ app: null }, '', '/');
+            }
+        }
+
+        function openApp(appId, updateHistory = true) {
+            const app = apps.find(a => a.id === appId);
+            if (!app) return;
+
+            currentApp = appId;
+
+            // Hide landing
+            document.getElementById('landing').style.display = 'none';
+
+            // Hide all app frames
+            document.querySelectorAll('.app-frame').forEach(frame => {
+                frame.classList.remove('active');
+            });
+
+            // Show selected app frame
+            const frame = document.getElementById(`app-frame-${appId}`);
+            frame.classList.add('active');
+
+            // Load iframe if not already loaded
+            const iframe = document.getElementById(`iframe-${appId}`);
+            if (!iframe.dataset.loaded) {
+                iframe.src = app.url;
+                iframe.dataset.loaded = 'true';
+            }
+
+            // Update nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.toggle('active', item.dataset.app === appId);
+            });
+
+            // Update title
+            document.title = `${app.name} - Delivery Process`;
+
+            // Update URL
+            if (updateHistory) {
+                history.pushState({ app: appId }, '', `/${appId}`);
+            }
+        }
+
+        // Handle initial route based on URL
+        function handleInitialRoute() {
+            const path = window.location.pathname.slice(1); // Remove leading /
+            if (path && apps.find(a => a.id === path)) {
+                openApp(path, false);
+                history.replaceState({ app: path }, '', `/${path}`);
+            } else {
+                history.replaceState({ app: null }, '', '/');
+            }
+        }
+
+        // Handle browser back/forward
+        window.addEventListener('popstate', (e) => {
+            if (e.state && e.state.app) {
+                openApp(e.state.app, false);
+            } else {
+                showLanding(false);
+            }
+        });
+
+        // Handle keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Alt + 1/2/3 to switch apps
+            if (e.altKey && e.key >= '1' && e.key <= '3') {
+                const index = parseInt(e.key) - 1;
+                if (apps[index]) {
+                    openApp(apps[index].id);
+                }
+            }
+            // Alt + 0 or Escape to go home
+            if ((e.altKey && e.key === '0') || (e.key === 'Escape' && currentApp)) {
+                showLanding();
+            }
+        });
+
+        // Initialize
+        loadApps();
+    </script>
+</body>
+</html>

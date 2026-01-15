@@ -1,0 +1,48 @@
+.mepMarker {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 10;
+  pointer-events: none;
+  transform: translateX(-50%);
+}
+
+.line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  background: linear-gradient(180deg, #dc2626 0%, #dc2626 50%, transparent 50%, transparent 100%);
+  background-size: 2px 8px;
+  transform: translateX(-50%);
+}
+
+.badge {
+  position: absolute;
+  top: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #dc2626;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  pointer-events: auto;
+}
+
+.version {
+  font-weight: 700;
+}
+
+.date {
+  font-size: 9px;
+  opacity: 0.9;
+}

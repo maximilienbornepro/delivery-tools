@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <title>Planification Dotscreen</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Planifications</h2>
+                <button id="newPlanning" class="btn btn-primary btn-small">+ Nouvelle</button>
+            </div>
+            <div class="planning-list" id="planningList">
+                <!-- Liste des planifications -->
+            </div>
+            <div class="sidebar-footer">
+                <button id="exportData" class="btn btn-secondary btn-small">Exporter</button>
+                <button id="importData" class="btn btn-secondary btn-small">Importer</button>
+                <input type="file" id="importFile" accept=".json" style="display: none;">
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <header>
+                <h1 id="planningTitle">Planification Dotscreen</h1>
+                <div class="planning-actions">
+                    <button id="savePlanning" class="btn btn-primary">Sauvegarder</button>
+                    <button id="renamePlanning" class="btn btn-secondary">Renommer</button>
+                    <button id="deletePlanning" class="btn btn-danger">Supprimer</button>
+                </div>
+            </header>
+
+            <main>
+            <!-- Configuration Section -->
+            <section class="config-section collapsible collapsed">
+                <h2 class="collapsible-header" onclick="toggleSection(this)">
+                    <span class="collapse-icon">▶</span>
+                    Configuration
+                </h2>
+                <div class="config-grid collapsible-content">
+                    <div class="config-card">
+                        <h3>Duree de planification</h3>
+                        <div class="form-group">
+                            <label for="planningDuration">Duree (mois)</label>
+                            <select id="planningDuration">
+                                <option value="1">1 mois</option>
+                                <option value="2" selected>2 mois</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="config-card">
+                        <h3>Ressources</h3>
+                        <div class="form-group">
+                            <label for="devResources">Ressources de developpement disponibles</label>
+                            <input type="number" id="devResources" value="2.5" step="0.5" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="workDaysPerMonth">Jours de travail / mois</label>
+                            <input type="number" id="workDaysPerMonth" value="20" min="1">
+                        </div>
+                    </div>
+
+                    <div class="config-card">
+                        <h3>Taux (% des jours dev)</h3>
+                        <div class="form-group">
+                            <label for="leadRate">Taux Lead (%)</label>
+                            <input type="number" id="leadRate" value="15" step="0.5" min="0" max="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="archiRate">Taux Archi (%)</label>
+                            <input type="number" id="archiRate" value="7.5" step="0.5" min="0" max="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="reunionDays">Jours de reunion</label>
+                            <input type="number" id="reunionDays" value="12.5" step="0.5" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="gestionProjetDays">Jours gestion de projet</label>
+                            <input type="number" id="gestionProjetDays" value="20" step="0.5" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="qaDays">Jours QA</label>
+                            <input type="number" id="qaDays" value="20" step="0.5" min="0">
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- Summary Section -->
+            <section class="summary-section">
+                <h2>Recapitulatif</h2>
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <span class="summary-label">Jours dev disponibles</span>
+                        <span class="summary-value" id="availableDevDays">0</span>
+                    </div>
+                    <div class="summary-card">
+                        <span class="summary-label">Jours Lead</span>
+                        <span class="summary-value" id="leadDays">0</span>
+                    </div>
+                    <div class="summary-card">
+                        <span class="summary-label">Jours Archi</span>
+                        <span class="summary-value" id="archiDays">0</span>
+                    </div>
+                    <div class="summary-card">
+                        <span class="summary-label">Total Jours Homme</span>
+                        <span class="summary-value" id="totalManDays">0</span>
+                    </div>
+                    <div class="summary-card other-days">
+                        <span class="summary-label">Autre</span>
+                        <span class="summary-value" id="otherDays">0</span>
+                        <span class="summary-detail" id="otherDaysDetail"></span>
+                    </div>
+                </div>
+                <div class="capacity-summary">
+                    <div class="capacity-comparison">
+                        <div class="capacity-planned">
+                            <span class="capacity-number" id="plannedDevDays">0 - 0</span>
+                            <span class="capacity-unit">jours estimes</span>
+                        </div>
+                        <div class="capacity-separator">/</div>
+                        <div class="capacity-available">
+                            <span class="capacity-number" id="availableDevDaysDisplay">0</span>
+                            <span class="capacity-unit">jours disponibles</span>
+                        </div>
+                    </div>
+                    <div class="capacity-bar-container">
+                        <div class="capacity-bar" id="capacityBar"></div>
+                    </div>
+                    <div class="capacity-label" id="capacityLabel">0% - 0% utilise</div>
+                </div>
+            </section>
+
+            <!-- Tasks Section -->
+            <section class="tasks-section">
+                <div class="tasks-header">
+                    <h2>Taches</h2>
+                    <div class="tasks-actions">
+                        <select id="filterApp">
+                            <option value="">Toutes les apps</option>
+                        </select>
+                        <button id="importTasksFromPlanning" class="btn btn-secondary">Importer taches</button>
+                        <button id="importCsv" class="btn btn-secondary">Importer CSV</button>
+                        <input type="file" id="importCsvFile" accept=".csv" style="display: none;">
+                        <button id="clearAllTasks" class="btn btn-danger btn-small">Tout supprimer</button>
+                        <button id="addTask" class="btn btn-primary">+ Ajouter une tache</button>
+                    </div>
+                </div>
+
+                <div class="tasks-table-container">
+                    <table class="tasks-table">
+                        <thead>
+                            <tr>
+                                <th>Application</th>
+                                <th>Tache</th>
+                                <th>T-Shirt Size</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tasksTableBody">
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Summary by App -->
+                <div class="app-summary" id="appSummary">
+                </div>
+            </section>
+            </main>
+        </div>
+
+        <!-- Modal for adding/editing task -->
+        <div class="modal" id="taskModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalTitle">Ajouter une tache</h3>
+                    <button class="modal-close" id="closeModal">&times;</button>
+                </div>
+                <form id="taskForm">
+                    <input type="hidden" id="taskId">
+                    <div class="form-group">
+                        <label for="taskApp">Application *</label>
+                        <input type="text" id="taskApp" list="appList" required>
+                        <datalist id="appList"></datalist>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskName">Nom de la tache *</label>
+                        <input type="text" id="taskName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskSize">T-Shirt Size *</label>
+                        <select id="taskSize" required>
+                            <option value="N/A">N/A (0J)</option>
+                            <option value="XXS">XXS</option>
+                            <option value="XS">XS</option>
+                            <option value="S" selected>S</option>
+                            <option value="M">M</option>
+                            <option value="L">L</option>
+                            <option value="XL">XL</option>
+                            <option value="XXL">XXL</option>
+                        </select>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" id="cancelTask">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Confirm Modal -->
+        <div class="modal" id="confirmModal">
+            <div class="modal-content modal-small">
+                <div class="modal-header">
+                    <h3>Confirmation</h3>
+                    <button class="modal-close" id="closeConfirmModal">&times;</button>
+                </div>
+                <p id="confirmMessage">Etes-vous sur de vouloir supprimer cette tache ?</p>
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" id="cancelConfirm">Annuler</button>
+                    <button class="btn btn-danger" id="confirmAction">Supprimer</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Import Tasks Modal -->
+        <div class="modal" id="importTasksModal">
+            <div class="modal-content modal-small">
+                <div class="modal-header">
+                    <h3>Importer des taches</h3>
+                    <button class="modal-close" id="closeImportTasksModal">&times;</button>
+                </div>
+                <form id="importTasksForm">
+                    <div class="form-group">
+                        <label for="sourcePlanningSelect">Planification source</label>
+                        <select id="sourcePlanningSelect" required>
+                            <option value="">-- Selectionnez une planification --</option>
+                        </select>
+                    </div>
+                    <div class="import-preview" id="importPreview"></div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" id="cancelImportTasks">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Importer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Planning Name Modal -->
+        <div class="modal" id="planningNameModal">
+            <div class="modal-content modal-small">
+                <div class="modal-header">
+                    <h3 id="planningNameModalTitle">Nom de la planification</h3>
+                    <button class="modal-close" id="closePlanningNameModal">&times;</button>
+                </div>
+                <form id="planningNameForm">
+                    <div class="form-group">
+                        <label for="planningNameInput">Nom</label>
+                        <input type="text" id="planningNameInput" required placeholder="Ex: Sprint Janvier 2025">
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" id="cancelPlanningName">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

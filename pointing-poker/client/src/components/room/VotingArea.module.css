@@ -1,0 +1,91 @@
+.container {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 1.5rem;
+  text-align: center;
+}
+
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.card {
+  width: 80px;
+  height: 110px;
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.card:hover {
+  border-color: #667eea;
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.2);
+}
+
+.card.selected {
+  border-color: #667eea;
+  transform: translateY(-8px);
+  box-shadow: 0 15px 30px rgba(102, 126, 234, 0.3);
+}
+
+.card.selected::before {
+  opacity: 1;
+}
+
+.card.selected .value {
+  color: white;
+}
+
+.value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1f2937;
+  position: relative;
+  z-index: 1;
+  transition: color 0.2s;
+}
+
+.selectedInfo {
+  text-align: center;
+  color: #6b7280;
+  margin: 1.5rem 0 0;
+}
+
+.selectedInfo strong {
+  color: #667eea;
+}
+
+.spectator {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  color: #6b7280;
+}

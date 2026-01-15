@@ -1,0 +1,41 @@
+{
+  "name": "delivery-process",
+  "version": "1.0.0",
+  "description": "Suite d'outils de gestion de projet pour France TV - Pointing Poker, Delivery Board, Planification",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "./start.sh",
+    "stop": "./stop.sh",
+    "status": "./status.sh",
+    "dev": "concurrently -n gateway,poker-server,poker-client,delivery-server,delivery-client,planif -c blue,green,cyan,yellow,magenta,white \"npm run dev:gateway\" \"npm run dev:poker:server\" \"npm run dev:poker:client\" \"npm run dev:delivery:server\" \"npm run dev:delivery:client\" \"npm run dev:planification\"",
+    "dev:gateway": "node gateway/server.js",
+    "dev:poker:server": "cd pointing-poker/server && npm run dev",
+    "dev:poker:client": "cd pointing-poker/client && npm run dev",
+    "dev:delivery:server": "cd delivery/server && npm run dev",
+    "dev:delivery:client": "cd delivery/client && npm run dev",
+    "dev:planification": "cd planification && npm start",
+    "install:all": "npm install && cd pointing-poker/server && npm install && cd ../client && npm install && cd ../../delivery/server && npm install && cd ../client && npm install && cd ../../planification && npm install",
+    "db:start": "docker-compose up -d",
+    "db:stop": "docker-compose down",
+    "db:reset": "docker-compose down -v && docker-compose up -d",
+    "build": "npm run build:poker && npm run build:delivery",
+    "build:poker": "cd pointing-poker/server && npm run build && cd ../client && npm run build",
+    "build:delivery": "cd delivery/server && npm run build && cd ../client && npm run build"
+  },
+  "keywords": [
+    "jira",
+    "planning-poker",
+    "delivery",
+    "sprint",
+    "scrum",
+    "agile"
+  ],
+  "author": "France TV",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "concurrently": "^9.1.2",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2"
+  }
+}

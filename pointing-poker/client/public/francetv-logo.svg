@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 50">
+  <defs>
+    <linearGradient id="tvGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#E8734A"/>
+      <stop offset="30%" style="stop-color:#F5B84C"/>
+      <stop offset="60%" style="stop-color:#8DD4B4"/>
+      <stop offset="100%" style="stop-color:#5BBCD6"/>
+    </linearGradient>
+  </defs>
+  <!-- Orange dot -->
+  <circle cx="12" cy="38" r="8" fill="#E86A52"/>
+  <!-- t letter -->
+  <path d="M28 8 L28 18 L22 18 L22 24 L28 24 L28 42 C28 46 30 48 35 48 L40 48 L40 42 L37 42 C35 42 34 41 34 39 L34 24 L42 24 L42 18 L34 18 L34 8 Z" fill="url(#tvGradient)"/>
+  <!-- v letter -->
+  <path d="M44 18 L56 48 L64 48 L76 18 L68 18 L60 40 L52 18 Z" fill="url(#tvGradient)"/>
+</svg>
