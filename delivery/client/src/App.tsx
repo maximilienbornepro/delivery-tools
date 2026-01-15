@@ -611,13 +611,23 @@ function App() {
     }));
   }, [allProjectsTasks, filterMergeTickets]);
 
-  // Filter tasks for single project view (apply Merge filter for TVORA/TVSFR)
+  // Filter tasks for single project view (apply hidden filter + Merge filter)
   const filteredTasks = useMemo(() => {
-    if (mergeFilterProjects.includes(selectedProject as ProjectKey)) {
-      return filterMergeTickets(tasks);
+    let result = tasks;
+
+    // Always filter hidden tasks (safety net to prevent flash)
+    if (piState?.hiddenJiraKeys && piState.hiddenJiraKeys.length > 0) {
+      const hiddenKeys = new Set(piState.hiddenJiraKeys);
+      result = result.filter(task => !task.jiraKey || !hiddenKeys.has(task.jiraKey));
     }
-    return tasks;
-  }, [tasks, selectedProject, filterMergeTickets]);
+
+    // Apply Merge filter for TVORA/TVSFR
+    if (mergeFilterProjects.includes(selectedProject as ProjectKey)) {
+      result = filterMergeTickets(result);
+    }
+
+    return result;
+  }, [tasks, selectedProject, filterMergeTickets, piState?.hiddenJiraKeys]);
 
   // Calculate total task count (with Merge filter applied)
   const totalTaskCount = isCombinedView
