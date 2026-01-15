@@ -3,8 +3,28 @@
 # ============================================
 # Delivery Process - Script de démarrage
 # ============================================
+# Usage: ./start.sh [options]
+#   --no-ngrok    Skip ngrok tunnels
+#   --help        Show this help
+# ============================================
 
 set -e
+
+# Parse arguments
+SKIP_NGROK=false
+for arg in "$@"; do
+    case $arg in
+        --no-ngrok)
+            SKIP_NGROK=true
+            ;;
+        --help)
+            echo "Usage: ./start.sh [options]"
+            echo "  --no-ngrok    Skip ngrok tunnels (local only)"
+            echo "  --help        Show this help"
+            exit 0
+            ;;
+    esac
+done
 
 # Colors
 RED='\033[0;31m'
@@ -153,31 +173,36 @@ sleep 2
 
 echo -e "  ${GREEN}✓${NC} Gateway démarrée"
 
-# Step 6: Start ngrok tunnels
-print_section "Démarrage des tunnels ngrok"
+# Step 6: Start ngrok tunnels (optional)
+if [ "$SKIP_NGROK" = false ]; then
+    print_section "Démarrage des tunnels ngrok"
 
-echo -e "  ${YELLOW}→${NC} Gateway tunnel..."
-ngrok http --url=$NGROK_GATEWAY $GATEWAY_PORT >/dev/null 2>&1 &
-sleep 1
+    echo -e "  ${YELLOW}→${NC} Gateway tunnel..."
+    ngrok http --url=$NGROK_GATEWAY $GATEWAY_PORT >/dev/null 2>&1 &
+    sleep 1
 
-echo -e "  ${YELLOW}→${NC} Pointing Poker tunnel..."
-ngrok http --url=$NGROK_POKER $POINTING_POKER_CLIENT_PORT >/dev/null 2>&1 &
-sleep 1
+    echo -e "  ${YELLOW}→${NC} Pointing Poker tunnel..."
+    ngrok http --url=$NGROK_POKER $POINTING_POKER_CLIENT_PORT >/dev/null 2>&1 &
+    sleep 1
 
-echo -e "  ${YELLOW}→${NC} Delivery tunnel..."
-ngrok http --url=$NGROK_DELIVERY $DELIVERY_CLIENT_PORT >/dev/null 2>&1 &
-sleep 1
+    echo -e "  ${YELLOW}→${NC} Delivery tunnel..."
+    ngrok http --url=$NGROK_DELIVERY $DELIVERY_CLIENT_PORT >/dev/null 2>&1 &
+    sleep 1
 
-echo -e "  ${YELLOW}→${NC} Planification tunnel..."
-ngrok http --url=$NGROK_PLANIFICATION $PLANIFICATION_PORT >/dev/null 2>&1 &
-sleep 2
+    echo -e "  ${YELLOW}→${NC} Planification tunnel..."
+    ngrok http --url=$NGROK_PLANIFICATION $PLANIFICATION_PORT >/dev/null 2>&1 &
+    sleep 2
 
-# Count active ngrok tunnels
-NGROK_COUNT=$(ps aux | grep -c "[n]grok http" || echo "0")
-echo -e "  ${GREEN}✓${NC} $NGROK_COUNT tunnel(s) ngrok actif(s)"
+    # Count active ngrok tunnels
+    NGROK_COUNT=$(ps aux | grep -c "[n]grok http" || echo "0")
+    echo -e "  ${GREEN}✓${NC} $NGROK_COUNT tunnel(s) ngrok actif(s)"
 
-if [ "$NGROK_COUNT" -lt 4 ]; then
-    echo -e "  ${YELLOW}⚠${NC}  Limite ngrok atteinte (3 tunnels max en gratuit)"
+    if [ "$NGROK_COUNT" -lt 4 ]; then
+        echo -e "  ${YELLOW}⚠${NC}  Limite ngrok atteinte (3 tunnels max en gratuit)"
+    fi
+else
+    print_section "Tunnels ngrok"
+    echo -e "  ${YELLOW}⚠${NC}  Tunnels ngrok désactivés (--no-ngrok)"
 fi
 
 # Wait for all services to be ready
@@ -200,45 +225,49 @@ printf "  │ %-23s │ %-6s │   %b    │ %-31s │\n" "Delivery Client" "$DE
 printf "  │ %-23s │ %-6s │   %b    │ %-31s │\n" "Planification" "$PLANIFICATION_PORT" "$(check_port $PLANIFICATION_PORT)" "http://localhost:$PLANIFICATION_PORT"
 echo -e "  └─────────────────────────┴────────┴────────┴─────────────────────────────────┘"
 
-echo ""
-echo -e "${WHITE}  Tunnels ngrok (accès externe)${NC}"
-echo -e "  ┌─────────────────────────┬────────┬─────────────────────────────────────────┐"
-echo -e "  │ Service                 │ Status │ URL                                     │"
-echo -e "  ├─────────────────────────┼────────┼─────────────────────────────────────────┤"
+if [ "$SKIP_NGROK" = false ]; then
+    echo ""
+    echo -e "${WHITE}  Tunnels ngrok (accès externe)${NC}"
+    echo -e "  ┌─────────────────────────┬────────┬─────────────────────────────────────────┐"
+    echo -e "  │ Service                 │ Status │ URL                                     │"
+    echo -e "  ├─────────────────────────┼────────┼─────────────────────────────────────────┤"
 
-# Check ngrok tunnels
-if ps aux | grep -q "[n]grok.*$NGROK_GATEWAY"; then
-    printf "  │ %-23s │   ${GREEN}●${NC}    │ %-39s │\n" "Gateway" "https://$NGROK_GATEWAY"
-else
-    printf "  │ %-23s │   ${RED}○${NC}    │ %-39s │\n" "Gateway" "https://$NGROK_GATEWAY"
+    # Check ngrok tunnels
+    if ps aux | grep -q "[n]grok.*$NGROK_GATEWAY"; then
+        printf "  │ %-23s │   ${GREEN}●${NC}    │ %-39s │\n" "Gateway" "https://$NGROK_GATEWAY"
+    else
+        printf "  │ %-23s │   ${RED}○${NC}    │ %-39s │\n" "Gateway" "https://$NGROK_GATEWAY"
+    fi
+
+    if ps aux | grep -q "[n]grok.*$NGROK_POKER"; then
+        printf "  │ %-23s │   ${GREEN}●${NC}    │ %-39s │\n" "Pointing Poker" "https://$NGROK_POKER"
+    else
+        printf "  │ %-23s │   ${RED}○${NC}    │ %-39s │\n" "Pointing Poker" "https://$NGROK_POKER"
+    fi
+
+    if ps aux | grep -q "[n]grok.*$NGROK_DELIVERY"; then
+        printf "  │ %-23s │   ${GREEN}●${NC}    │ %-39s │\n" "Delivery" "https://$NGROK_DELIVERY"
+    else
+        printf "  │ %-23s │   ${RED}○${NC}    │ %-39s │\n" "Delivery" "https://$NGROK_DELIVERY"
+    fi
+
+    if ps aux | grep -q "[n]grok.*$NGROK_PLANIFICATION"; then
+        printf "  │ %-23s │   ${GREEN}●${NC}    │ %-39s │\n" "Planification" "https://$NGROK_PLANIFICATION"
+    else
+        printf "  │ %-23s │   ${RED}○${NC}    │ %-39s │\n" "Planification" "https://$NGROK_PLANIFICATION"
+    fi
+
+    echo -e "  └─────────────────────────┴────────┴─────────────────────────────────────────┘"
 fi
-
-if ps aux | grep -q "[n]grok.*$NGROK_POKER"; then
-    printf "  │ %-23s │   ${GREEN}●${NC}    │ %-39s │\n" "Pointing Poker" "https://$NGROK_POKER"
-else
-    printf "  │ %-23s │   ${RED}○${NC}    │ %-39s │\n" "Pointing Poker" "https://$NGROK_POKER"
-fi
-
-if ps aux | grep -q "[n]grok.*$NGROK_DELIVERY"; then
-    printf "  │ %-23s │   ${GREEN}●${NC}    │ %-39s │\n" "Delivery" "https://$NGROK_DELIVERY"
-else
-    printf "  │ %-23s │   ${RED}○${NC}    │ %-39s │\n" "Delivery" "https://$NGROK_DELIVERY"
-fi
-
-if ps aux | grep -q "[n]grok.*$NGROK_PLANIFICATION"; then
-    printf "  │ %-23s │   ${GREEN}●${NC}    │ %-39s │\n" "Planification" "https://$NGROK_PLANIFICATION"
-else
-    printf "  │ %-23s │   ${RED}○${NC}    │ %-39s │\n" "Planification" "https://$NGROK_PLANIFICATION"
-fi
-
-echo -e "  └─────────────────────────┴────────┴─────────────────────────────────────────┘"
 
 echo ""
 echo -e "${GREEN}  ✓ Delivery Process est prêt !${NC}"
 echo ""
 echo -e "  ${CYAN}Accès principal:${NC}"
 echo -e "    Local  → ${WHITE}http://localhost:$GATEWAY_PORT${NC}"
-echo -e "    Public → ${WHITE}https://$NGROK_GATEWAY${NC}"
+if [ "$SKIP_NGROK" = false ]; then
+    echo -e "    Public → ${WHITE}https://$NGROK_GATEWAY${NC}"
+fi
 echo ""
 echo -e "  ${CYAN}Commandes utiles:${NC}"
 echo -e "    ./stop.sh       ${YELLOW}# Arrêter tous les services${NC}"
